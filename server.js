@@ -39,18 +39,23 @@ let io = new socket.Server(server);
 
 let chat = []
 
-io.on("connection", (s)=>{
+io.on("connection", async (s)=>{
     console.log("User id: " + s.id)
-    io.emit("update", JSON.stringify(chat))
-    s.on("message", (data)=>{
-        let message = JSON.parse(data)
-        chat.push(message)
+    let messages = await db.getMessages()
+    console.log(messages)
+    let chat = messages.map(m=>({user: m.login, message: m.content}))
+    io.emit("update", JSON.stringify(chat));
+    s.on("message", async (data)=>{
+        let message = JSON.parse(data);
+        let text = message.message
+
+        await db.addMessage(text, 1)
+
+        let messages = await db.getMessages()
+        console.log(messages)
+        let chat = messages.map(m=>({user: m.login, message: m.content}))
+        
         io.emit("update", JSON.stringify(chat))
     })
 });
 
-db.getUsers().then(result=>{
-    console.log(result);
-}).catch((err) => {
-    console.log(err);
-});
