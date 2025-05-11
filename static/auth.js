@@ -1,5 +1,5 @@
 
-document.querySelector("form.register").addEventListener("submit", (e)=>{
+document.querySelector("form.register")?.addEventListener("submit", (e)=>{
     let data = new FormData(e.target)
     let login = data.get("login")
     let password = data.get("password")
@@ -13,5 +13,29 @@ document.querySelector("form.register").addEventListener("submit", (e)=>{
     fetch("/api/register",{
         method: "POST",
         body: JSON.stringify({login, password})
-    }).then(res=>res.json()).then(ers=>console.log(res))
+    }).then(res=>res.json()).then(res=>{
+        if(res.status == "User exist"){
+            alert("користувач з таким логіном вже існує")
+        }else if(res.status == "ok"){
+            window.location = "/login"
+        }
+    })
+})
+
+document.querySelector("form.login")?.addEventListener("submit", (e)=>{
+    let data = new FormData(e.target)
+    let login = data.get("login")
+    let password = data.get("password")
+    e.preventDefault();
+
+    fetch("/api/login",{
+        method: "POST",
+        body: JSON.stringify({login, password})
+    }).then(res=>res.json()).then(res=>{
+        if(res.status == "error"){
+            alert("логін чи пароль невірний")
+        }else if(res.status == "ok"){
+            window.location = "/"
+        }
+    })
 })
