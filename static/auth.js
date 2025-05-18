@@ -35,6 +35,9 @@ document.querySelector("form.login")?.addEventListener("submit", (e)=>{
         if(res.status == "error"){
             alert("логін чи пароль невірний")
         }else if(res.status == "ok"){
+            document.cookie = "token=" + res.token
+            document.cookie = "login=" + res.login
+            document.cookie = "id=" + res.id
             window.location = "/"
         }
     })
